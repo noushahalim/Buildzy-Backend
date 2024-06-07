@@ -10,6 +10,10 @@ app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({extended:true}))
 
+//for common route
+const common=require("./routes/commonRouter")
+app.use("/",common)
+
 //for client route
 const client=require("./routes/clientRouter")
 app.use("/client",client)

@@ -16,9 +16,24 @@ const signupSchema = mongoose.Schema({
     password:{
         type:String,
         required:true
+    },
+    role:{
+        type:String,
+        required:true
+    },
+    status:{
+        type:String,
+        default:'pending'
+    },
+    otp:{
+        type:String
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
 })
 
-const engineerSignupModel = mongoose.model('engineerSignupDatas',signupSchema)
+const signupModel = mongoose.model('signupDatas',signupSchema)
 
-module.exports = engineerSignupModel
+module.exports = signupModel
