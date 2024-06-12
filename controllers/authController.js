@@ -3,6 +3,7 @@ const signupValidation = require("../utilities/signupValidation")
 const nodemailer = require('../utilities/otpController')
 const otpGenerator = require('otp-generator')
 const bcrypt = require("bcrypt")
+const jwt = require('jsonwebtoken')
 
 const generateOtp = ()=>{
     return otpGenerator.generate(4, { 
@@ -923,6 +924,31 @@ exports.changePassword = async (req,res)=>{
     }
     catch(err){
         console.log('error on changePassword',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.login = async(req,res)=>{
+    try{
+        const {email,password}= req.body
+        const client = await signupModel.findOne({email})
+        if(!client){
+            return res.status(400).json('check your email')
+        }
+        else{
+            const passwordCheck = await bcrypt.compare(password,client.password)
+            if(!passwordCheck){
+                return res.status(400).json('wrong password')
+            }
+            else{
+                const id = {id:client._id}
+                const jwtToken= jwt.sign(id,process.env.ACCESS_TOKEN_SECRET)
+                res.status(200).json({token:jwtToken,name:client.fullName,role:client.role})
+            }
+        }
+    }
+    catch(err){
+        console.log('error on login',err);
         res.status(500).json('Internal server error');
     }
 }

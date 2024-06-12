@@ -8,5 +8,6 @@ commonRouter.post('/forgotPassword',authController.forgotPassword)
 commonRouter.post('/forgotOtpVerification',authController.forgotOtpVerification)
 commonRouter.post('/forgotResendOtp',authController.forgotResendOtp)
 commonRouter.post('/changePassword',authController.changePassword)
+commonRouter.post('/login',authController.login)
 
 module.exports = commonRouter
