@@ -368,7 +368,8 @@ exports.engineerSignup = async (req,res)=>{
                         mobileNumber:mobileNumber,
                         password:hasedPassword,
                         role:'engineer',
-                        otp:emailOtp
+                        otp:emailOtp,
+                        registered:false
                     }
                 )
 
@@ -949,6 +950,36 @@ exports.login = async(req,res)=>{
     }
     catch(err){
         console.log('error on login',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.profileChange = async(req,res)=>{
+    try{
+        const id = req.user.id
+        const client = await signupModel.findOne({_id:id})
+
+        if(!client){
+            return res.status(400).json('canot access user details')
+        }
+        else{
+            const profile = req.file.location
+            if(!profile){
+                return res.status(400).json('canot access profile details')
+            }
+            else{
+                await signupModel.findOneAndUpdate(
+                    {_id:id},
+                    {
+                        profile:profile
+                    }
+                )
+                res.status(200).json('profile updated')
+            }
+        }
+    }
+    catch(err){
+        console.log('error on profileChange',err);
         res.status(500).json('Internal server error');
     }
 }

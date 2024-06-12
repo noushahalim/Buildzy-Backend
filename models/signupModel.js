@@ -28,6 +28,12 @@ const signupSchema = mongoose.Schema({
     otp:{
         type:String
     },
+    registered:{
+        type:Boolean
+    },
+    profile:{
+        type:String
+    },
     createdAt:{
         type:Date,
         default:Date.now
