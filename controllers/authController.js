@@ -943,8 +943,13 @@ exports.login = async(req,res)=>{
             }
             else{
                 const id = {id:client._id}
-                const jwtToken= jwt.sign(id,process.env.ACCESS_TOKEN_SECRET)
-                res.status(200).json({token:jwtToken,name:client.fullName,role:client.role})
+                const jwtToken= jwt.sign(id,process.env.JWT_TOKEN_SECRET)
+                if(client.profile){
+                    res.status(200).json({token:jwtToken,role:client.role,profileImage:client.profile})    
+                }
+                else{
+                    res.status(200).json({token:jwtToken,role:client.role})
+                }
             }
         }
     }
@@ -968,18 +973,38 @@ exports.profileChange = async(req,res)=>{
                 return res.status(400).json('canot access profile details')
             }
             else{
-                await signupModel.findOneAndUpdate(
+                const updatedClient = await signupModel.findOneAndUpdate(
                     {_id:id},
-                    {
+                    {$set:{
                         profile:profile
-                    }
+                    }},
+                    {new:true}
                 )
-                res.status(200).json('profile updated')
+                res.status(200).json({profileImage:updatedClient.profile})
             }
         }
     }
     catch(err){
         console.log('error on profileChange',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+
+exports.profileDetails = async (req,res)=>{
+    try{
+        const id = req.user.id
+        const client = await signupModel.findOne({_id:id})
+
+        if(!client){
+            return res.status(400).json('canot access user details')
+        }
+        else{
+            res.status(200).json({fullName:client.fullName,email:client.email})
+        }
+    }
+    catch(err){
+        console.log('error on profileDetails',err);
         res.status(500).json('Internal server error');
     }
 }

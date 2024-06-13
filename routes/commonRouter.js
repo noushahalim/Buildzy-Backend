@@ -13,5 +13,6 @@ commonRouter.post('/forgotResendOtp',authController.forgotResendOtp)
 commonRouter.post('/changePassword',authController.changePassword)
 commonRouter.post('/login',authController.login)
 commonRouter.post('/profileChange',jwtAuthentication,multer.single('image'),authController.profileChange)
+commonRouter.get('/profileDetails',jwtAuthentication,authController.profileDetails)
 
 module.exports = commonRouter
