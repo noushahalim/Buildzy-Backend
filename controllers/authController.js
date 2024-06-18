@@ -942,13 +942,35 @@ exports.login = async(req,res)=>{
                 return res.status(400).json('wrong password')
             }
             else{
-                const id = {id:client._id}
-                const jwtToken= jwt.sign(id,process.env.JWT_TOKEN_SECRET)
-                if(client.profile){
-                    res.status(200).json({token:jwtToken,role:client.role,profileImage:client.profile})    
+                if(client.role=='client'){
+                    const id = {id:client._id}
+                    const jwtToken= jwt.sign(id,process.env.JWT_TOKEN_SECRET)
+                    if(client.profile){
+                        res.status(200).json({token:jwtToken,role:client.role,profileImage:client.profile,registered:client.registered})    
+                    }
+                    else{
+                        res.status(200).json({token:jwtToken,role:client.role,registered:client.registered})
+                    }
                 }
                 else{
-                    res.status(200).json({token:jwtToken,role:client.role})
+                    if(client.registered==true){
+                        const id = {id:client._id}
+                        const jwtToken= jwt.sign(id,process.env.JWT_TOKEN_SECRET)
+                        if(client.profile){
+                            res.status(200).json({token:jwtToken,role:client.role,profileImage:client.profile,registered:client.registered})    
+                        }
+                        else{
+                            res.status(200).json({token:jwtToken,role:client.role,registered:client.registered})
+                        } 
+                    }
+                    else{
+                        if(client.profile){
+                            res.status(200).json({id:client._id,role:client.role,profileImage:client.profile,registered:client.registered})    
+                        }
+                        else{
+                            res.status(200).json({id:client._id,role:client.role,registered:client.registered})
+                        }
+                    }
                 }
             }
         }
