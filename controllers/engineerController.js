@@ -17,6 +17,7 @@ exports.componyRegistration = async(req,res)=>{
                 return res.status(400).json('canot access logo details')
             }
             else{
+                const logoKey = req.file.key
                 const newCompony = new componyModel({
                     engineerId:engineer._id,
                     componyName,
@@ -26,7 +27,8 @@ exports.componyRegistration = async(req,res)=>{
                     state,
                     district,
                     description,
-                    logo:logo
+                    logo:logo,
+                    logoKey:logoKey
                 })
                 await newCompony.save()
                 await signupModel.findOneAndUpdate(
@@ -37,7 +39,7 @@ exports.componyRegistration = async(req,res)=>{
                 )
                 const engId = {id:engineer._id}
                 const jwtToken= jwt.sign(engId,process.env.JWT_TOKEN_SECRET)
-                res.status(200).json({token:jwtToken})
+                res.status(200).json({token:jwtToken,role:engineer.role})
             }
         }
     }

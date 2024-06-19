@@ -1,6 +1,6 @@
 const multer = require('multer')
 const multerS3 = require('multer-s3')
-const { S3Client } = require('@aws-sdk/client-s3')
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3')
 
 s3 = new S3Client({
     region: process.env.AWS_REGION,
@@ -10,7 +10,7 @@ s3 = new S3Client({
     }
 });
 
-const upload = multer({
+exports.upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: process.env.AWS_BUCKET_NAME,
@@ -23,4 +23,16 @@ const upload = multer({
     })
 })
 
-module.exports = upload
+exports.deleteImageFromS3 = async(bucketName, objKey)=>{
+    try{
+        const deleteCommand = new DeleteObjectCommand({
+            Bucket: bucketName,
+            Key: objKey
+        });
+
+        await s3.send(deleteCommand);
+    }
+    catch(err){
+        console.log('error deleting image:',err);
+    }
+}

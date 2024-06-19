@@ -4,6 +4,7 @@ const nodemailer = require('../utilities/otpController')
 const otpGenerator = require('otp-generator')
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
+const multer = require('../middlewares/multer')
 
 const generateOtp = ()=>{
     return otpGenerator.generate(4, { 
@@ -990,15 +991,21 @@ exports.profileChange = async(req,res)=>{
             return res.status(400).json('canot access user details')
         }
         else{
+            if(client.profileKey){
+                const objKey = client.profileKey
+                multer.deleteImageFromS3(process.env.AWS_BUCKET_NAME,objKey)
+            }
             const profile = req.file.location
             if(!profile){
                 return res.status(400).json('canot access profile details')
             }
             else{
+                const profileKey = req.file.key
                 const updatedClient = await signupModel.findOneAndUpdate(
                     {_id:id},
                     {$set:{
-                        profile:profile
+                        profile:profile,
+                        profileKey:profileKey
                     }},
                     {new:true}
                 )

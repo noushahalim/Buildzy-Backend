@@ -34,6 +34,9 @@ const signupSchema = mongoose.Schema({
     profile:{
         type:String
     },
+    profileKey:{
+        type:String
+    },
     createdAt:{
         type:Date,
         default:Date.now
