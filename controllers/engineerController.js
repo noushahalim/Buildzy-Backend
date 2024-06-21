@@ -9,12 +9,12 @@ exports.componyRegistration = async(req,res)=>{
         const engineer = await signupModel.findOne({_id:id})
 
         if(!engineer){
-            return res.status(400).json('canot access user details')
+            return res.status(400).json('cannot access user details')
         }
         else{
             const logo = req.file.location
             if(!logo){
-                return res.status(400).json('canot access logo details')
+                return res.status(400).json('cannot access logo details')
             }
             else{
                 const logoKey = req.file.key
@@ -45,6 +45,24 @@ exports.componyRegistration = async(req,res)=>{
     }
     catch(err){
         console.log('error on componyRegistration',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.componyDetails = async (req,res)=>{
+    try{
+        const id = req.user.id
+        const compony = await componyModel.findOne({engineerId:id})
+
+        if(!compony){
+            return res.status(400).json('cannot access compony details')
+        }
+        else{
+            res.status(200).json(compony)
+        }
+    }
+    catch(err){
+        console.log('error on componyDetails Get',err);
         res.status(500).json('Internal server error');
     }
 }

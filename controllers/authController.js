@@ -988,7 +988,7 @@ exports.profileChange = async(req,res)=>{
         const client = await signupModel.findOne({_id:id})
 
         if(!client){
-            return res.status(400).json('canot access user details')
+            return res.status(400).json('cannot access user details')
         }
         else{
             if(client.profileKey){
@@ -997,7 +997,7 @@ exports.profileChange = async(req,res)=>{
             }
             const profile = req.file.location
             if(!profile){
-                return res.status(400).json('canot access profile details')
+                return res.status(400).json('cannot access profile details')
             }
             else{
                 const profileKey = req.file.key
@@ -1026,7 +1026,7 @@ exports.profileDetails = async (req,res)=>{
         const client = await signupModel.findOne({_id:id})
 
         if(!client){
-            return res.status(400).json('canot access user details')
+            return res.status(400).json('cannot access user details')
         }
         else{
             res.status(200).json({fullName:client.fullName,email:client.email})
