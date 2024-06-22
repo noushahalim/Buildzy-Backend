@@ -1,6 +1,7 @@
 const componyModel = require('../models/componyModel')
 const signupModel = require('../models/signupModel')
 const jwt = require('jsonwebtoken')
+const multer = require('../middlewares/multer')
 
 exports.componyRegistration = async(req,res)=>{
     try{
@@ -63,6 +64,63 @@ exports.componyDetails = async (req,res)=>{
     }
     catch(err){
         console.log('error on componyDetails Get',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.componyUpdation = async(req,res)=>{
+    try{
+        const {componyName,componyEmail,componyMobile,experiance,state,district,description} = req.body
+        const id =req.user.id
+        const engineer = await signupModel.findOne({_id:id})
+
+        if(!engineer){
+            return res.status(400).json('cannot access user details')
+        }
+        else{
+            if(req.file){
+                const compony = await componyModel.findOne({engineerId:engineer._id})
+                if(compony.logoKey){
+                    const objKey = compony.logoKey
+                    multer.deleteImageFromS3(process.env.AWS_BUCKET_NAME,objKey)
+                }
+                const logo = req.file.location
+                const logoKey = req.file.key
+                await componyModel.findOneAndUpdate(
+                    {engineerId:engineer._id},
+                    {$set:{
+                        componyName,
+                        componyEmail,
+                        componyMobile,
+                        experiance,
+                        state,
+                        district,
+                        description,
+                        logo:logo,
+                        logoKey:logoKey
+                    }}
+                )
+                res.status(200).json('compony updated')
+            }
+            else{
+                await componyModel.findOneAndUpdate(
+                    {engineerId:engineer._id},
+                    {$set:{
+                        componyName,
+                        componyEmail,
+                        componyMobile,
+                        experiance,
+                        state,
+                        district,
+                        description
+                    }}
+                )
+                res.status(200).json('compony updated')
+            }
+        }
+    }
+    catch(err){
+        console.log('error on componyUpdation',err);
         res.status(500).json('Internal server error');
     }
 }

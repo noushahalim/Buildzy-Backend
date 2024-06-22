@@ -9,5 +9,6 @@ const engineerController = require('../controllers/engineerController')
 engineerRouter.post('/signup',authController.engineerSignup)
 engineerRouter.post("/componyRegistration/:id",multer.upload.single('image'),engineerController.componyRegistration)
 engineerRouter.get("/componyDetails", jwtAuthentication, engineerController.componyDetails)
+engineerRouter.post("/componyUpdation", jwtAuthentication,multer.upload.single('image'),engineerController.componyUpdation)
 
 module.exports = engineerRouter

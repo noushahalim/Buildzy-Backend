@@ -37,6 +37,10 @@ const componySchema = mongoose.Schema({
         type:String,
         required:true
     },
+    logoKey:{
+        type:String,
+        required:true
+    },
     status:{
         type:String,
         default:true
