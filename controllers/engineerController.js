@@ -1,5 +1,6 @@
 const componyModel = require('../models/componyModel')
 const signupModel = require('../models/signupModel')
+const chatModel= require('../models/chatModel')
 const jwt = require('jsonwebtoken')
 const multer = require('../middlewares/multer')
 
@@ -121,6 +122,37 @@ exports.componyUpdation = async(req,res)=>{
     }
     catch(err){
         console.log('error on componyUpdation',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.clientChats = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+        const clientId = req.params.id;
+
+        const engineer = await signupModel.findById(engineerId)
+
+        if(!engineer){
+            return res.status(404).json('engineer not valid');
+        }
+
+        if(!clientId){
+            return res.status(400).json('ID not valid');
+        }
+
+        const chats = await chatModel.findOne({engineerId:engineerId,clientId:clientId});
+
+        if(!chats){
+            return res.status(404).json('Cannot access chat details')
+        }
+
+        const client = await signupModel.findOne({_id:clientId})
+
+        res.status(200).json({chats:chats,client:client,engineer:engineer._id})
+    }
+    catch(err){
+        console.log('error on componyChats getting',err);
         res.status(500).json('Internal server error');
     }
 }
