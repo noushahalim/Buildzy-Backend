@@ -86,7 +86,7 @@ exports.componyChats = async (req,res)=>{
 
         const compony = await componyModel.findOne({engineerId:engineerId})
 
-        res.status(200).json({chats:chats,compony:compony})
+        res.status(200).json({chats:chats,compony:compony,client:client._id})
     }
     catch(err){
         console.log('error on componyChats getting',err);

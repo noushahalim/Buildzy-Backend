@@ -9,6 +9,23 @@ const chatSchema = mongoose.Schema({
         type:mongoose.Types.ObjectId,
         required:true
     },
+    messages:{
+        type:[{
+            sender:{
+                type:String
+            },
+            reciver:{
+                type:String
+            },
+            message:{
+                type:String
+            },
+            time:{
+                type:Date,
+                default:Date.now
+            }
+        }]
+    },
     status:{
         type:Boolean,
         default:false
