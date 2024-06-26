@@ -14,7 +14,7 @@ const chatSchema = mongoose.Schema({
             sender:{
                 type:String
             },
-            reciver:{
+            receiver:{
                 type:String
             },
             message:{
