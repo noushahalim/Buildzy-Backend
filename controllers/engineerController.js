@@ -3,6 +3,7 @@ const signupModel = require('../models/signupModel')
 const chatModel= require('../models/chatModel')
 const jwt = require('jsonwebtoken')
 const multer = require('../middlewares/multer')
+const mongoose = require('mongoose')
 
 exports.componyRegistration = async(req,res)=>{
     try{
@@ -160,6 +161,46 @@ exports.clientChats = async (req,res)=>{
     }
     catch(err){
         console.log('error on componyChats getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.clientChatsList = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+
+        const engineer = await signupModel.findById(engineerId)
+
+        if(!engineer){
+            return res.status(404).json('engineer not valid');
+        }
+
+        const chatsList = await chatModel.aggregate([
+            {
+            $match:{engineerId:new mongoose.Types.ObjectId(engineerId)},
+            },
+            {
+                $lookup : {
+                    from:'signupdatas',
+                    localField:"clientId",
+                    foreignField:"_id",
+                    as:'clientData'
+                }   
+            },
+            {
+              $sort: {
+                engineerUnread: -1,
+              },
+            },
+          ])
+
+        if(!chatsList){
+            return res.status(404).json('Cannot access chat details')
+        }
+        res.status(200).json(chatsList)
+    }
+    catch(err){
+        console.log('error on clientChatsList getting',err);
         res.status(500).json('Internal server error');
     }
 }
