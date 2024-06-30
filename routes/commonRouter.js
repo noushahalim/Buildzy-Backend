@@ -16,5 +16,6 @@ commonRouter.post('/login',authController.login)
 commonRouter.post('/profileChange',jwtAuthentication,multer.upload.single('image'),authController.profileChange)
 commonRouter.get('/profileDetails',jwtAuthentication,authController.profileDetails)
 commonRouter.post('/chatSave',jwtAuthentication,chatController.chatSave)
+commonRouter.get('/notificationCount',jwtAuthentication,chatController.notificationCount)
 
 module.exports = commonRouter

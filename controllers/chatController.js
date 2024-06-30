@@ -46,3 +46,48 @@ exports.chatSave = async(req,res)=>{
         res.status(500).json('Internal server error');
     }
 }
+
+exports.notificationCount = async (req,res)=>{
+    try{
+        const id = req.user.id
+        const client = await signupModel.findOne({_id:id})
+
+        if(!client){
+            return res.status(400).json('cannot access user details')
+        }
+
+        if(client.role==='client'){
+            const chats = await chatModel.find({clientId:client._id})
+            if(!chats){
+                return res.status(400).json('cannot access chat details')
+            }
+            let notificationCount=0
+    
+            chats.map((chat)=>{
+                notificationCount+=chat.clientUnread
+            })
+            
+            res.status(200).json(notificationCount)
+        }
+        else if(client.role==='engineer'){
+            const chats = await chatModel.find({engineerId:client._id})
+            if(!chats){
+                return res.status(400).json('cannot access chat details')
+            }
+            let notificationCount=0
+    
+            chats.map((chat)=>{
+                notificationCount+=chat.engineerUnread
+            })
+            
+            res.status(200).json(notificationCount)
+        }
+        else{
+            return res.status(400).json('cannot access user details')
+        }
+    }
+    catch(err){
+        console.log('error on notificationCount',err);
+        res.status(500).json('Internal server error');
+    }
+}
