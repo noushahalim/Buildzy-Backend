@@ -204,3 +204,40 @@ exports.clientChatsList = async (req,res)=>{
         res.status(500).json('Internal server error');
     }
 }
+
+exports.requestAccept = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+        const clientId = req.params.id;
+
+        const engineer = await signupModel.findById(engineerId)
+
+        if(!engineer){
+            return res.status(404).json('engineer not valid');
+        }
+
+        if(!clientId){
+            return res.status(400).json('ID not valid');
+        }
+
+        const chats = await chatModel.findOne({engineerId:engineerId,clientId:clientId});
+
+        if(!chats){
+            return res.status(404).json('Cannot access chat details')
+        }
+
+        await chatModel.findOneAndUpdate(
+            {engineerId:engineerId,clientId:clientId},
+            {$set:{
+                status:true,
+                clientUnread:1
+            }}
+        )
+
+        res.status(200).json('accepted')
+    }
+    catch(err){
+        console.log('error on requestAccept getting',err);
+        res.status(500).json('Internal server error');
+    }
+}

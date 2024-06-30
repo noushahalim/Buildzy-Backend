@@ -12,5 +12,6 @@ engineerRouter.get("/componyDetails", jwtAuthentication, engineerController.comp
 engineerRouter.post("/componyUpdation", jwtAuthentication,multer.upload.single('image'),engineerController.componyUpdation)
 engineerRouter.get('/clientChats/:id',jwtAuthentication,engineerController.clientChats)
 engineerRouter.get('/clientChatsList',jwtAuthentication,engineerController.clientChatsList)
+engineerRouter.get('/requestAccept/:id',jwtAuthentication,engineerController.requestAccept)
 
 module.exports = engineerRouter
