@@ -29,6 +29,14 @@ const chatSchema = mongoose.Schema({
     status:{
         type:Boolean,
         default:false
+    },
+    clientUnread:{
+        type:Number,
+        default:0
+    },
+    engineerUnread:{
+        type:Number,
+        default:0
     }
 })
 

@@ -10,5 +10,6 @@ clientRouter.get('/componyDatas',clientController.componyDatas)
 clientRouter.get('/componyDetails/:id',clientController.componyDetails)
 clientRouter.get('/componyConnect/:id',jwtAuthentication,clientController.componyConnect)
 clientRouter.get('/componyChats/:id',jwtAuthentication,clientController.componyChats)
+clientRouter.get('/componyChatsList',jwtAuthentication,clientController.componyChatsList)
 
 module.exports = clientRouter

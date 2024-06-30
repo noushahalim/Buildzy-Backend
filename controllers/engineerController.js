@@ -147,6 +147,13 @@ exports.clientChats = async (req,res)=>{
             return res.status(404).json('Cannot access chat details')
         }
 
+        await chatModel.findOneAndUpdate(
+            {engineerId:engineerId,clientId:clientId},
+            {$set:{
+                engineerUnread:0
+            }}
+        )
+
         const client = await signupModel.findOne({_id:clientId})
 
         res.status(200).json({chats:chats,client:client,engineer:engineer._id})
