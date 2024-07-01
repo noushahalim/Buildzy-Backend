@@ -5,7 +5,6 @@ const mongoose = require('mongoose')
 const companyModel = require('../models/companyModel')
 const signupModel = require('../models/signupModel')
 const chatModel= require('../models/chatModel')
-const workRequestModel = require('../models/workRequestModel')
 
 exports.companyRegistration = async(req,res)=>{
     try{
@@ -265,76 +264,6 @@ exports.clientDetails = async (req,res)=>{
     }
     catch(err){
         console.log('error on clientDetails',err);
-        res.status(500).json('Internal server error');
-    }
-}
-
-exports.submitWorkRequest = async(req,res)=>{
-    try{
-        const {projectTitle,projectDescription,projectLocation,projectType,startDate,endDate,clientId,estimatedCost,milestones} = req.body
-        console.log(req.body);
-        const engineerId =req.user.id
-        const engineer = await signupModel.findOne({_id:engineerId})
-
-        if(!engineer){
-            return res.status(400).json('cannot access user details')
-        }
-
-        const client = await signupModel.findOne({_id:clientId})
-        if(!client){
-            return res.status(400).json('cannot access user details')
-        }
-
-        const company = await companyModel.findOne({engineerId:engineerId})
-        if(!company){
-            return res.status(400).json('cannot access company details')
-        }
-
-        const milestoneObjects = milestones.map((description, index) => ({
-            description,
-            status: index === 0
-        }));
-
-        const newWorkRequest = new workRequestModel({
-            projectTitle,
-            projectDescription,
-            projectLocation,
-            projectType,
-            startDate,
-            endDate,
-            clientName:client.fullName,
-            estimatedCost,
-            milestones:milestoneObjects,
-            engineerId:engineer._id,
-            clientId:client._id,
-            companyName:company.companyName
-        })
-
-        await newWorkRequest.save()
-
-        await chatModel.findOneAndUpdate(
-            {clientId:client._id,engineerId:engineer._id},
-            {$push:{
-                messages:{
-                    sender:engineer._id,
-                    receiver:client._id,
-                    message:`Dear ${client.fullName}, 
-                            We are pleased to inform you that a new work request has been submitted for your consideration. The details of the proposed project can be reviewed on our Company Details page.
-                            To proceed with this work request, please review the submission and choose to either agree to the proposal or delete it.
-                            Thank you for your attention.
-                            Best regards,
-                            ${company.companyName}`
-                }
-            }},
-            {$inc:{
-                clientUnread:1
-            }}
-        )
-
-        res.status(200).json('Work Request submited')
-    }
-    catch(err){
-        console.log('error on submitWorkRequest',err);
         res.status(500).json('Internal server error');
     }
 }
