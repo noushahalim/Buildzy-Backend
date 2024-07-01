@@ -1,20 +1,20 @@
 const mongoose = require('mongoose')
-const componyModel= require('../models/componyModel')
+const companyModel= require('../models/companyModel')
 const signUpModel= require('../models/signupModel')
 const chatModel= require('../models/chatModel')
 
-exports.componyDatas = async (req,res)=>{
+exports.companyDatas = async (req,res)=>{
     try{
-        const componyDatas= await componyModel.find({status:true})
-        res.status(200).json(componyDatas)
+        const companyDatas= await companyModel.find({status:true})
+        res.status(200).json(companyDatas)
     }
     catch(err){
-        console.log('error on componyDatas getting',err);
+        console.log('error on companyDatas getting',err);
         res.status(500).json('Internal server error');
     }
 }
 
-exports.componyDetails = async (req,res)=>{
+exports.companyDetails = async (req,res)=>{
     try{
         const id = req.params.id;
 
@@ -22,21 +22,21 @@ exports.componyDetails = async (req,res)=>{
             return res.status(400).json('ID not valid');
         }
 
-        const compony = await componyModel.findById(id);
+        const company = await companyModel.findById(id);
 
-        if(!compony){
-            return res.status(404).json('Cannot access compony details')
+        if(!company){
+            return res.status(404).json('Cannot access company details')
         }
 
-        res.status(200).json(compony)
+        res.status(200).json(company)
     }
     catch(err){
-        console.log('error on componyDetails getting',err);
+        console.log('error on companyDetails getting',err);
         res.status(500).json('Internal server error');
     }
 }
 
-exports.componyConnect = async (req,res)=>{
+exports.companyConnect = async (req,res)=>{
     try{
         const clientId =req.user.id
         const engineerId = req.params.id;
@@ -60,12 +60,12 @@ exports.componyConnect = async (req,res)=>{
         res.status(200).json('connected successfully')
     }
     catch(err){
-        console.log('error on componyConnect',err);
+        console.log('error on companyConnect',err);
         res.status(500).json('Internal server error');
     }
 }
 
-exports.componyChats = async (req,res)=>{
+exports.companyChats = async (req,res)=>{
     try{
         const clientId = req.user.id;
         const engineerId = req.params.id;
@@ -93,17 +93,17 @@ exports.componyChats = async (req,res)=>{
             }}
         )
 
-        const compony = await componyModel.findOne({engineerId:engineerId})
+        const company = await companyModel.findOne({engineerId:engineerId})
 
-        res.status(200).json({chats:chats,compony:compony,client:client._id})
+        res.status(200).json({chats:chats,company:company,client:client._id})
     }
     catch(err){
-        console.log('error on componyChats getting',err);
+        console.log('error on companyChats getting',err);
         res.status(500).json('Internal server error');
     }
 }
 
-exports.componyChatsList = async (req,res)=>{
+exports.companyChatsList = async (req,res)=>{
     try{
         const clientId = req.user.id;
 
@@ -119,10 +119,10 @@ exports.componyChatsList = async (req,res)=>{
             },
             {
                 $lookup : {
-                    from:'componydatas',
+                    from:'companydatas',
                     localField:"engineerId",
                     foreignField:"engineerId",
-                    as:'componyData'
+                    as:'companyData'
                 }   
             },
             {
@@ -138,7 +138,7 @@ exports.componyChatsList = async (req,res)=>{
         res.status(200).json(chatsList)
     }
     catch(err){
-        console.log('error on componyChatsList getting',err);
+        console.log('error on companyChatsList getting',err);
         res.status(500).json('Internal server error');
     }
 }

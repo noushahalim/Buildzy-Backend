@@ -1,19 +1,19 @@
 const mongoose = require('mongoose')
 
-const componySchema = mongoose.Schema({
+const companySchema = mongoose.Schema({
     engineerId:{
         type:mongoose.Types.ObjectId,
         required:true
     },
-    componyName:{
+    companyName:{
         type:String,
         required:true
     },
-    componyEmail:{
+    companyEmail:{
         type:String,
         required:true
     },
-    componyMobile:{
+    companyMobile:{
         type:Number,
         required:true
     },
@@ -51,6 +51,6 @@ const componySchema = mongoose.Schema({
     }
 })
 
-const componyModel = mongoose.model('componyDatas',componySchema)
+const companyModel = mongoose.model('companyDatas',companySchema)
 
-module.exports = componyModel
+module.exports = companyModel

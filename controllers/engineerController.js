@@ -1,13 +1,15 @@
-const componyModel = require('../models/componyModel')
-const signupModel = require('../models/signupModel')
-const chatModel= require('../models/chatModel')
 const jwt = require('jsonwebtoken')
 const multer = require('../middlewares/multer')
 const mongoose = require('mongoose')
 
-exports.componyRegistration = async(req,res)=>{
+const companyModel = require('../models/companyModel')
+const signupModel = require('../models/signupModel')
+const chatModel= require('../models/chatModel')
+const workRequestModel = require('../models/workRequestModel')
+
+exports.companyRegistration = async(req,res)=>{
     try{
-        const {componyName,componyEmail,componyMobile,experiance,state,district,description} = req.body
+        const {companyName,companyEmail,companyMobile,experiance,state,district,description} = req.body
         const id =req.params.id
         const engineer = await signupModel.findOne({_id:id})
 
@@ -21,11 +23,11 @@ exports.componyRegistration = async(req,res)=>{
             }
             else{
                 const logoKey = req.file.key
-                const newCompony = new componyModel({
+                const newCompany = new companyModel({
                     engineerId:engineer._id,
-                    componyName,
-                    componyEmail,
-                    componyMobile,
+                    companyName,
+                    companyEmail,
+                    companyMobile,
                     experiance,
                     state,
                     district,
@@ -33,7 +35,7 @@ exports.componyRegistration = async(req,res)=>{
                     logo:logo,
                     logoKey:logoKey
                 })
-                await newCompony.save()
+                await newCompany.save()
                 await signupModel.findOneAndUpdate(
                     {_id:id},
                     {$set:{
@@ -47,32 +49,32 @@ exports.componyRegistration = async(req,res)=>{
         }
     }
     catch(err){
-        console.log('error on componyRegistration',err);
+        console.log('error on companyRegistration',err);
         res.status(500).json('Internal server error');
     }
 }
 
-exports.componyDetails = async (req,res)=>{
+exports.companyDetails = async (req,res)=>{
     try{
         const id = req.user.id
-        const compony = await componyModel.findOne({engineerId:id})
+        const company = await companyModel.findOne({engineerId:id})
 
-        if(!compony){
-            return res.status(400).json('cannot access compony details')
+        if(!company){
+            return res.status(400).json('cannot access company details')
         }
         else{
-            res.status(200).json(compony)
+            res.status(200).json(company)
         }
     }
     catch(err){
-        console.log('error on componyDetails Get',err);
+        console.log('error on companyDetails Get',err);
         res.status(500).json('Internal server error');
     }
 }
 
-exports.componyUpdation = async(req,res)=>{
+exports.companyUpdation = async(req,res)=>{
     try{
-        const {componyName,componyEmail,componyMobile,experiance,state,district,description} = req.body
+        const {companyName,companyEmail,companyMobile,experiance,state,district,description} = req.body
         const id =req.user.id
         const engineer = await signupModel.findOne({_id:id})
 
@@ -81,19 +83,19 @@ exports.componyUpdation = async(req,res)=>{
         }
         else{
             if(req.file){
-                const compony = await componyModel.findOne({engineerId:engineer._id})
-                if(compony.logoKey){
-                    const objKey = compony.logoKey
+                const company = await companyModel.findOne({engineerId:engineer._id})
+                if(company.logoKey){
+                    const objKey = company.logoKey
                     multer.deleteImageFromS3(process.env.AWS_BUCKET_NAME,objKey)
                 }
                 const logo = req.file.location
                 const logoKey = req.file.key
-                await componyModel.findOneAndUpdate(
+                await companyModel.findOneAndUpdate(
                     {engineerId:engineer._id},
                     {$set:{
-                        componyName,
-                        componyEmail,
-                        componyMobile,
+                        companyName,
+                        companyEmail,
+                        companyMobile,
                         experiance,
                         state,
                         district,
@@ -102,27 +104,27 @@ exports.componyUpdation = async(req,res)=>{
                         logoKey:logoKey
                     }}
                 )
-                res.status(200).json('compony updated')
+                res.status(200).json('company updated')
             }
             else{
-                await componyModel.findOneAndUpdate(
+                await companyModel.findOneAndUpdate(
                     {engineerId:engineer._id},
                     {$set:{
-                        componyName,
-                        componyEmail,
-                        componyMobile,
+                        companyName,
+                        companyEmail,
+                        companyMobile,
                         experiance,
                         state,
                         district,
                         description
                     }}
                 )
-                res.status(200).json('compony updated')
+                res.status(200).json('company updated')
             }
         }
     }
     catch(err){
-        console.log('error on componyUpdation',err);
+        console.log('error on companyUpdation',err);
         res.status(500).json('Internal server error');
     }
 }
@@ -160,7 +162,7 @@ exports.clientChats = async (req,res)=>{
         res.status(200).json({chats:chats,client:client,engineer:engineer._id})
     }
     catch(err){
-        console.log('error on componyChats getting',err);
+        console.log('error on companyChats getting',err);
         res.status(500).json('Internal server error');
     }
 }
@@ -238,6 +240,101 @@ exports.requestAccept = async (req,res)=>{
     }
     catch(err){
         console.log('error on requestAccept getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.clientDetails = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+        const clientId = req.params.id;
+        const engineer = await signupModel.findOne({_id:engineerId})
+
+        if(!engineer){
+            return res.status(400).json('cannot access user details')
+        }
+
+        const client = await signupModel.findOne({_id:clientId})
+
+        if(!client){
+            return res.status(400).json('cannot access user details')
+        }
+
+        res.status(200).json({fullName:client.fullName})
+        
+    }
+    catch(err){
+        console.log('error on clientDetails',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.submitWorkRequest = async(req,res)=>{
+    try{
+        const {projectTitle,projectDescription,projectLocation,projectType,startDate,endDate,clientId,estimatedCost,milestones} = req.body
+        console.log(req.body);
+        const engineerId =req.user.id
+        const engineer = await signupModel.findOne({_id:engineerId})
+
+        if(!engineer){
+            return res.status(400).json('cannot access user details')
+        }
+
+        const client = await signupModel.findOne({_id:clientId})
+        if(!client){
+            return res.status(400).json('cannot access user details')
+        }
+
+        const company = await companyModel.findOne({engineerId:engineerId})
+        if(!company){
+            return res.status(400).json('cannot access company details')
+        }
+
+        const milestoneObjects = milestones.map((description, index) => ({
+            description,
+            status: index === 0
+        }));
+
+        const newWorkRequest = new workRequestModel({
+            projectTitle,
+            projectDescription,
+            projectLocation,
+            projectType,
+            startDate,
+            endDate,
+            clientName:client.fullName,
+            estimatedCost,
+            milestones:milestoneObjects,
+            engineerId:engineer._id,
+            clientId:client._id,
+            companyName:company.companyName
+        })
+
+        await newWorkRequest.save()
+
+        await chatModel.findOneAndUpdate(
+            {clientId:client._id,engineerId:engineer._id},
+            {$push:{
+                messages:{
+                    sender:engineer._id,
+                    receiver:client._id,
+                    message:`Dear ${client.fullName}, 
+                            We are pleased to inform you that a new work request has been submitted for your consideration. The details of the proposed project can be reviewed on our Company Details page.
+                            To proceed with this work request, please review the submission and choose to either agree to the proposal or delete it.
+                            Thank you for your attention.
+                            Best regards,
+                            ${company.companyName}`
+                }
+            }},
+            {$inc:{
+                clientUnread:1
+            }}
+        )
+
+        res.status(200).json('Work Request submited')
+    }
+    catch(err){
+        console.log('error on submitWorkRequest',err);
         res.status(500).json('Internal server error');
     }
 }
