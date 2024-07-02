@@ -169,3 +169,24 @@ exports.workRequestDetails = async (req,res)=>{
         res.status(500).json('Internal server error');
     }
 }
+
+exports.works = async (req,res)=>{
+    try{
+        const clientId = req.user.id;
+        const client = await signUpModel.findById(clientId)
+        if(!client){
+            return res.status(404).json('client not valid');
+        }
+
+        const works = await workRequestModel.find({clientId:client._id,status:true})
+        if(!works){
+            return res.status(404).json('Cannot access works details')
+        }
+
+        res.status(200).json(works)
+    }
+    catch(err){
+        console.log('error on works getting',err);
+        res.status(500).json('Internal server error');
+    }
+}

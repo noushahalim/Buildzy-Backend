@@ -16,5 +16,6 @@ clientRouter.get('/workRequests/:id',jwtAuthentication,worksController.workReque
 clientRouter.get('/agreeWorkRequest/:id',jwtAuthentication,worksController.agreeWorkRequest)
 clientRouter.delete("/deleteWorkRequest/:id",jwtAuthentication,worksController.deleteWorkRequest)
 clientRouter.get('/workRequestDetails/:id',jwtAuthentication,worksController.workRequestDetails)
+clientRouter.get('/works',jwtAuthentication,worksController.works)
 
 module.exports = clientRouter
