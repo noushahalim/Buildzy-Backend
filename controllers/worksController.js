@@ -108,18 +108,14 @@ exports.agreeWorkRequest = async (req,res)=>{
             return res.status(404).json('client not valid');
         }
 
-        const engineerId = req.params.id;
-        const engineer = await signUpModel.findById(engineerId)
-        if(!engineer){
-            return res.status(404).json('engineer not valid');
+        const workId = req.params.id;
+        const work = await workRequestModel.findById(workId)
+        if(!work){
+            return res.status(404).json('Cannot access workRequests details');
         }
 
-        const workRequests = await workRequestModel.find({clientId:client._id,engineerId:engineer._id})
-        if(!workRequests){
-            return res.status(404).json('Cannot access workRequests details')
-        }
         await workRequestModel.findOneAndUpdate(
-            {clientId:client._id,engineerId:engineer._id},
+            {_id:work._id},
             {$set:{
                 status:true
             }}
@@ -148,7 +144,7 @@ exports.deleteWorkRequest=async (req,res)=>{
     }
 }
 
-exports.workRequestDetails = async (req,res)=>{
+exports.workDetails = async (req,res)=>{
     try{
         const clientId = req.user.id;
         const client = await signUpModel.findById(clientId)
