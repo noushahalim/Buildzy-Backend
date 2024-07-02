@@ -13,7 +13,8 @@ clientRouter.get('/companyConnect/:id',jwtAuthentication,clientController.compan
 clientRouter.get('/companyChats/:id',jwtAuthentication,clientController.companyChats)
 clientRouter.get('/companyChatsList',jwtAuthentication,clientController.companyChatsList)
 clientRouter.get('/workRequests/:id',jwtAuthentication,worksController.workRequests)
-clientRouter.get('/agreeProject/:id',jwtAuthentication,worksController.agreeWorkRequest)
+clientRouter.get('/agreeWorkRequest/:id',jwtAuthentication,worksController.agreeWorkRequest)
 clientRouter.delete("/deleteWorkRequest/:id",jwtAuthentication,worksController.deleteWorkRequest)
+clientRouter.get('/workRequestDetails/:id',jwtAuthentication,worksController.workRequestDetails)
 
 module.exports = clientRouter

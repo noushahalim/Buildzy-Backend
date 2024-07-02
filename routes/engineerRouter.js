@@ -5,6 +5,7 @@ const jwtAuthentication = require('../middlewares/jwtAuthentication')
 
 const authController = require('../controllers/authController')
 const engineerController = require('../controllers/engineerController')
+const worksController = require('../controllers/worksController')
 
 engineerRouter.post('/signup',authController.engineerSignup)
 engineerRouter.post("/companyRegistration/:id",multer.upload.single('image'),engineerController.companyRegistration)
@@ -14,6 +15,6 @@ engineerRouter.get('/clientChats/:id',jwtAuthentication,engineerController.clien
 engineerRouter.get('/clientChatsList',jwtAuthentication,engineerController.clientChatsList)
 engineerRouter.get('/requestAccept/:id',jwtAuthentication,engineerController.requestAccept)
 engineerRouter.get('/clientDetails/:id',jwtAuthentication,engineerController.clientDetails)
-engineerRouter.post("/submitWorkRequest", jwtAuthentication,engineerController.submitWorkRequest)
+engineerRouter.post("/submitWorkRequest", jwtAuthentication,worksController.submitWorkRequest)
 
 module.exports = engineerRouter

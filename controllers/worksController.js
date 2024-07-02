@@ -147,3 +147,25 @@ exports.deleteWorkRequest=async (req,res)=>{
         console.log("error when delete WorkRequest",err);
     }
 }
+
+exports.workRequestDetails = async (req,res)=>{
+    try{
+        const clientId = req.user.id;
+        const client = await signUpModel.findById(clientId)
+        if(!client){
+            return res.status(404).json('client not valid');
+        }
+
+        const workRequestId = req.params.id;
+        const workRequest = await workRequestModel.findOne({_id:workRequestId,clientId:client._id})
+        if(!workRequest){
+            return res.status(404).json('workRequest not valid');
+        }
+
+        res.status(200).json(workRequest)
+    }
+    catch(err){
+        console.log('error on workRequestDetails getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
