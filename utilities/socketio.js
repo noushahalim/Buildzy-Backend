@@ -5,12 +5,10 @@ let users = {};
 
 exports.socketio = (io)=>{
     io.on('connection',(socket)=>{
-        console.log('new client connected : ' + socket.id);
 
         socket.on('register', (clientId) => {
             users[clientId] = socket.id;
             socket.clientId = clientId;
-            console.log(`User registered: ${clientId} with socket ID: ${socket.id}`);
         });
     
         socket.on('sendMessage', async (message)=>{
@@ -40,7 +38,6 @@ exports.socketio = (io)=>{
         })
     
         socket.on('disconnect',()=>{
-            console.log('client disconnected'  + socket.id);
             if (socket.clientId) {
                 delete users[socket.clientId];
             }
