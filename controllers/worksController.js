@@ -207,3 +207,55 @@ exports.engineerWorks = async (req,res)=>{
         res.status(500).json('Internal server error');
     }
 }
+
+exports.engineerWorkDetails = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+        const engineer = await signUpModel.findById(engineerId)
+        if(!engineer){
+            return res.status(404).json('engineer not valid');
+        }
+
+        const workRequestId = req.params.id;
+        const workRequest = await workRequestModel.findOne({_id:workRequestId,engineerId:engineer._id})
+        if(!workRequest){
+            return res.status(404).json('workRequest not valid');
+        }
+
+        res.status(200).json(workRequest)
+    }
+    catch(err){
+        console.log('error on workRequestDetails getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.updateMilestones = async(req,res)=>{
+    try{
+        const {workId,milestones} = req.body
+        const id =req.user.id
+
+        const engineer = await signUpModel.findOne({_id:id})
+        if(!engineer){
+            return res.status(400).json('cannot access user details')
+        }
+
+        const work = await workRequestModel.findById(workId)
+        if(!work){
+            return res.status(400).json('cannot access work details')
+        }
+
+        for (let milestone of milestones){
+            await workRequestModel.findOneAndUpdate(
+                {_id:workId , "milestones._id": milestone._id},
+                {$set:{"milestones.$.status":milestone.status}}
+            )
+        }
+
+        res.status(200).json('Milestones updated successfully');
+    }
+    catch(err){
+        console.log('error on companyUpdation',err);
+        res.status(500).json('Internal server error');
+    }
+}
