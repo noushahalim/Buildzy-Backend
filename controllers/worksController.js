@@ -186,3 +186,24 @@ exports.works = async (req,res)=>{
         res.status(500).json('Internal server error');
     }
 }
+
+exports.engineerWorks = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+        const engineer = await signUpModel.findById(engineerId)
+        if(!engineer){
+            return res.status(404).json('engineer not valid');
+        }
+
+        const works = await workRequestModel.find({engineerId:engineer._id,status:true})
+        if(!works){
+            return res.status(404).json('Cannot access works details')
+        }
+
+        res.status(200).json(works)
+    }
+    catch(err){
+        console.log('error on engineerWorks getting',err);
+        res.status(500).json('Internal server error');
+    }
+}

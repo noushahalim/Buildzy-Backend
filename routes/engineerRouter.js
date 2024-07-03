@@ -16,5 +16,6 @@ engineerRouter.get('/clientChatsList',jwtAuthentication,engineerController.clien
 engineerRouter.get('/requestAccept/:id',jwtAuthentication,engineerController.requestAccept)
 engineerRouter.get('/clientDetails/:id',jwtAuthentication,engineerController.clientDetails)
 engineerRouter.post("/submitWorkRequest", jwtAuthentication,worksController.submitWorkRequest)
+engineerRouter.get('/engineerWorks',jwtAuthentication,worksController.engineerWorks)
 
 module.exports = engineerRouter
