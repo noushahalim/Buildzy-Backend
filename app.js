@@ -4,12 +4,16 @@ const { Server } = require('socket.io');
 require('dotenv').config()
 const dbConnect = require('./config/connection')
 const cors = require('cors')
+
 const app = express();
 const server = require('http').createServer(app);
 
 const io = new Server(server,{
     cors: {
         origin: '*',
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['Content-Type'],
+        credentials: true
     },
 })
 
@@ -39,4 +43,6 @@ dbConnect().then(()=>{
     server.listen(port,()=>{
         console.log(`server is running on ${port}`)
     })
-})
+}).catch((err) => {
+    console.error('Database connection failed:', err);
+});

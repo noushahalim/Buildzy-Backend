@@ -37,6 +37,16 @@ exports.socketio = (io)=>{
             }
         })
     
+        socket.on('signalingMessage', (message) => {
+            const receiverSocketId = users[message.receiver];
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit('signalingMessage', {
+                    ...message,
+                    sender: socket.clientId
+                });
+            }
+        });
+        
         socket.on('disconnect',()=>{
             if (socket.clientId) {
                 delete users[socket.clientId];
