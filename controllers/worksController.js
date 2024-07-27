@@ -2,6 +2,7 @@ const signUpModel = require('../models/signupModel')
 const workRequestModel = require('../models/workRequestModel')
 const companyModel = require('../models/companyModel')
 const chatModel = require('../models/chatModel')
+const reviewModel = require('../models/reviewModel')
 
 exports.submitWorkRequest = async(req,res)=>{
     try{
@@ -256,6 +257,51 @@ exports.updateMilestones = async(req,res)=>{
     }
     catch(err){
         console.log('error on companyUpdation',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+
+exports.reviewSubmit = async (req,res)=>{
+    try{
+        const clientId = req.user.id;
+
+        const client = await signUpModel.findById(clientId)
+
+        if(!client){
+            return res.status(404).json('client not valid');
+        }
+
+        const {rating,comment,engineerId} = req.body
+
+        const company = await companyModel.findOne({ engineerId })
+
+        if(!company){
+            return res.status(404).json('compony not valid');
+        }
+
+        const newReview = new reviewModel({
+            companyId:company._id,
+            clientId,
+            rating,
+            comment
+        })
+
+        await newReview.save()
+
+        const reviews = await reviewModel.find({ companyId: company._id });
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        const averageRating = totalRating / reviews.length;
+        
+        const roundedRating = Math.round(averageRating * 2) / 2;
+
+        company.rating = roundedRating;
+        await company.save();
+
+        res.status(200).json('Review added and company rating updated')
+    }
+    catch(err){
+        console.log('error on reviewSubmit posting',err);
         res.status(500).json('Internal server error');
     }
 }

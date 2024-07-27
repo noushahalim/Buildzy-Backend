@@ -45,6 +45,10 @@ const companySchema = mongoose.Schema({
         type:String,
         default:true
     },
+    rating:{
+        type:Number,
+        default:0
+    },
     createdAt:{
         type:Date,
         default:Date.now
