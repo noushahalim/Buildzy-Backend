@@ -18,5 +18,6 @@ clientRouter.delete("/deleteWorkRequest/:id",jwtAuthentication,worksController.d
 clientRouter.get('/workDetails/:id',jwtAuthentication,worksController.workDetails)
 clientRouter.get('/works',jwtAuthentication,worksController.works)
 clientRouter.post('/reviewSubmit',jwtAuthentication,worksController.reviewSubmit)
+clientRouter.get('/companyReviews/:id',clientController.companyReviews)
 
 module.exports = clientRouter

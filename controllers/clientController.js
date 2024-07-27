@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const companyModel= require('../models/companyModel')
 const signUpModel= require('../models/signupModel')
 const chatModel= require('../models/chatModel')
+const reviewModel= require('../models/reviewModel')
 
 exports.companyDatas = async (req,res)=>{
     try{
@@ -139,6 +140,39 @@ exports.companyChatsList = async (req,res)=>{
     }
     catch(err){
         console.log('error on companyChatsList getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.companyReviews = async (req,res)=>{
+    try{
+        const companyId = req.params.id;
+
+        if(!companyId){
+            return res.status(400).json('ID not valid');
+        }
+
+        const reviews = await reviewModel.aggregate([
+            {
+            $match:{companyId:new mongoose.Types.ObjectId(companyId)},
+            },
+            {
+                $lookup : {
+                    from:'signupdatas',
+                    localField:"clientId",
+                    foreignField:"_id",
+                    as:'clientData'
+                }   
+            }
+        ])
+
+        if(!reviews){
+            return res.status(404).json('Cannot access reviews details')
+        }
+        res.status(200).json(reviews)
+    }
+    catch(err){
+        console.log('error on reviews getting',err);
         res.status(500).json('Internal server error');
     }
 }
