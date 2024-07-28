@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 const signUpModel = require('../models/signupModel')
 const workRequestModel = require('../models/workRequestModel')
 const companyModel = require('../models/companyModel')
@@ -302,6 +304,78 @@ exports.reviewSubmit = async (req,res)=>{
     }
     catch(err){
         console.log('error on reviewSubmit posting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.invoiceDetails = async (req,res)=>{
+    try{
+        const clientId = req.user.id;
+        const client = await signUpModel.findById(clientId)
+        if(!client){
+            return res.status(404).json('client not valid');
+        }
+
+        const workRequestId = req.params.id;
+
+        const invoiceDetails = await workRequestModel.aggregate([
+            {
+            $match:{_id:new mongoose.Types.ObjectId(workRequestId),clientId:client._id},
+            },
+            {
+                $lookup : {
+                    from:'companydatas',
+                    localField:"engineerId",
+                    foreignField:"engineerId",
+                    as:'companyData'
+                }   
+            }
+        ])
+
+        if(!invoiceDetails){
+            return res.status(404).json('workRequest not valid');
+        }
+
+        res.status(200).json(invoiceDetails)
+    }
+    catch(err){
+        console.log('error on invoiceDetails getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
+exports.invoiceDetailsEngineer = async (req,res)=>{
+    try{
+        const engineerId = req.user.id;
+        const engineer = await signUpModel.findById(engineerId)
+        if(!engineer){
+            return res.status(404).json('client not valid');
+        }
+
+        const workRequestId = req.params.id;
+
+        const invoiceDetails = await workRequestModel.aggregate([
+            {
+            $match:{_id:new mongoose.Types.ObjectId(workRequestId),engineerId:engineer._id},
+            },
+            {
+                $lookup : {
+                    from:'companydatas',
+                    localField:"engineerId",
+                    foreignField:"engineerId",
+                    as:'companyData'
+                }   
+            }
+        ])
+
+        if(!invoiceDetails){
+            return res.status(404).json('workRequest not valid');
+        }
+
+        res.status(200).json(invoiceDetails)
+    }
+    catch(err){
+        console.log('error on invoiceDetailsEngineer getting',err);
         res.status(500).json('Internal server error');
     }
 }

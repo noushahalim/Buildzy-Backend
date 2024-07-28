@@ -19,5 +19,6 @@ engineerRouter.post("/submitWorkRequest", jwtAuthentication,worksController.subm
 engineerRouter.get('/engineerWorks',jwtAuthentication,worksController.engineerWorks)
 engineerRouter.get('/engineerWorkDetails/:id',jwtAuthentication,worksController.engineerWorkDetails)
 engineerRouter.post("/updateMilestones", jwtAuthentication,worksController.updateMilestones)
+engineerRouter.get('/invoiceDetails/:id',jwtAuthentication,worksController.invoiceDetailsEngineer)
 
 module.exports = engineerRouter

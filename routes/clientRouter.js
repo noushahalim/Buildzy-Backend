@@ -19,5 +19,6 @@ clientRouter.get('/workDetails/:id',jwtAuthentication,worksController.workDetail
 clientRouter.get('/works',jwtAuthentication,worksController.works)
 clientRouter.post('/reviewSubmit',jwtAuthentication,worksController.reviewSubmit)
 clientRouter.get('/companyReviews/:id',clientController.companyReviews)
+clientRouter.get('/invoiceDetails/:id',jwtAuthentication,worksController.invoiceDetails)
 
 module.exports = clientRouter
