@@ -66,6 +66,35 @@ exports.companyConnect = async (req,res)=>{
     }
 }
 
+exports.companyConnectionStatus = async (req,res)=>{
+    try{
+        const clientId = req.user.id;
+        const engineerId = req.params.id;
+
+        const client = await signUpModel.findById(clientId)
+
+        if(!client){
+            return res.status(404).json('client not valid');
+        }
+
+        if(!engineerId){
+            return res.status(400).json('ID not valid');
+        }
+
+        const chats = await chatModel.findOne({engineerId:engineerId,clientId:clientId});
+
+        if(!chats){
+            return res.status(200).json(false)
+        }
+
+        res.status(200).json(true)
+    }
+    catch(err){
+        console.log('error on companyConnectionStatus getting',err);
+        res.status(500).json('Internal server error');
+    }
+}
+
 exports.companyChats = async (req,res)=>{
     try{
         const clientId = req.user.id;
